@@ -3,14 +3,16 @@
 #include "hardware/clocks.h"
 #include "hardware/pio.h"
 #include "hardware/i2c.h"
+#include "hardware/uart.h"
 #include "pio_matrix.pio.h"
 #include "lib/ssd1306.h"
 #include "lib/font.h"
+#include "lib/frames.h"
 
 #define UART_ID uart0         // Seleciona a UART0
 #define I2C_PORT i2c1         // Porta de inicializacao do display
-#define endereco 0x3C         // Endereco de inicializacao do display
-#define I2C_SDA 14            // Pino LDA do display
+#define ENDERECO 0x3C         // Endereco de inicializacao do display
+#define I2C_SDA 14            // Pino SDA do display
 #define I2C_SCL 15            // Pino SCL do display
 #define BTN_A 5               // Pino do botao A
 #define BTN_B 6               // Pino do botao B
@@ -18,8 +20,8 @@
 #define GREEN_PINO 11         // Pino do LED verde do RGB
 #define BLUE_PINO 12          // Pino do LED azul do RGB
 #define RED_PINO 13           // Pino do LED vermelho do RGB
-#define UART_TX_PIN 0         // Pino GPIO usado para TX
-#define UART_RX_PIN 1         // Pino GPIO usado para RX
+#define UART_TX_PINO 0         // Pino GPIO usado para TX
+#define UART_RX_PINO 1         // Pino GPIO usado para RX
 #define BAUD_RATE 115200      // Define a taxa de transmissao serial
 #define NUMERO_DE_LEDS 25     // Numero de LED's na matriz
 #define DEBOUNCE_LINE 300000  // 300ms em microsegundos
@@ -93,7 +95,7 @@ int main(){
     gpio_set_function(I2C_SCL, GPIO_FUNC_I2C);  // Seta a funcao do GPIO para I2C
     gpio_pull_up(I2C_SDA);                      // Ativa a transmissao de dados
     gpio_pull_up(I2C_SCL);                      // Ativa o clock
-    ssd1306_init(&ssd, WIDTH, HEIGHT, false, endereco, I2C_PORT);  // Inicializa o display
+    ssd1306_init(&ssd, WIDTH, HEIGHT, false, ENDERECO, I2C_PORT);  // Inicializa o display
     ssd1306_config(&ssd);                       // Configura o display
     ssd1306_send_data(&ssd);                    // Envia os dados para o display
 
@@ -113,8 +115,8 @@ int main(){
     gpio_set_dir(GREEN_PINO, GPIO_OUT);
     gpio_set_dir(BLUE_PINO, GPIO_OUT);
 
-    gpio_set_function(UART_TX_PIN, GPIO_FUNC_UART);  // Configura o pino 0 para TX
-    gpio_set_function(UART_RX_PIN, GPIO_FUNC_UART);  // Configura o pino 1 para RX
+    gpio_set_function(UART_TX_PINO, GPIO_FUNC_UART);  // Configura o pino 0 para TX
+    gpio_set_function(UART_RX_PINO, GPIO_FUNC_UART);  // Configura o pino 1 para RX
 
     // Chamada do desenho inicial no comeco da execucao
     //desenho_pio(frame_0, valor_led, pio, sm, r, g, b);
@@ -131,7 +133,7 @@ int main(){
     gpio_set_irq_enabled_with_callback(BTN_A, GPIO_IRQ_EDGE_FALL, true, &button_callback);
     gpio_set_irq_enabled_with_callback(BTN_B, GPIO_IRQ_EDGE_FALL, true, &button_callback);
 
-    const char *init_message = "Digite algo e veja o eco:\r\n";
+    const char *init_message = "Digite o caracter que deseja:\r\n";
     uart_puts(UART_ID, init_message);
 
     while (true) {
@@ -148,20 +150,11 @@ int main(){
         if (uart_is_readable(UART_ID)) {
             // Lê um caractere da UART
             char c = uart_getc(UART_ID);
-            if (c == 'r'){
-                gpio_put(RED_PINO, !gpio_get(RED_PINO));
-            }
-            if (c == 'g'){
-                gpio_put(GREEN_PINO, !gpio_get(GREEN_PINO));
-            }
-            if (c == 'b'){
-                gpio_put(BLUE_PINO, !gpio_get(BLUE_PINO));
-            }                        
-            // Envia de volta o caractere lido (eco)
-            uart_putc(UART_ID, c);
+            
+            ssd1306_fill(&ssd, cor);
+            ssd1306_draw_char(&ssd, c, 20, 30);
+            ssd1306_send_data(&ssd);
 
-            // Envia uma mensagem adicional para cada caractere recebido
-            uart_puts(UART_ID, " <- Eco do RP2\r\n");
         }
 
         sleep_ms(1000);
