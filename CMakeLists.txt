@@ -59,6 +59,7 @@ target_include_directories(projeto_serial PRIVATE
 target_link_libraries(projeto_serial 
         hardware_pio
         hardware_i2c
+        hardware_uart
         )
 
 pico_add_extra_outputs(projeto_serial)
