@@ -38,7 +38,6 @@ O código controla o LED RGB, a matriz de LEDs 5x5, o monitor SSD1306, a comunic
 - `OUT_PINO`: Pino da matriz de LEDs.
 - `UART_TX_PINO`: Pino GPIO usado para TX.
 - `UART_RX_PINO`: Pino GPIO usado para RX.
-- `BAUD_RATE`: Define a taxa de transmissão serial.
 - `NUMERO_DE_LEDS`: Define o numero de LEDs na matriz.
 - `GREEN_PINO`: Define o pino de saída utilizado pelo LED verde do RGB.
 - `BLUE_PINO`: Define o pino de saída utilizado pelo LED azul do RGB.

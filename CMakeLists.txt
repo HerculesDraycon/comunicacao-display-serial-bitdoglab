@@ -35,7 +35,7 @@ pico_sdk_init()
 
 # Add executable. Default name is the project name, version 0.1
 
-add_executable(projeto_serial projeto_serial.c lib/ssd1306.c)
+add_executable(projeto_serial projeto_serial.c lib/ssd1306.c lib/frames.c)
 
 pico_set_program_name(projeto_serial "projeto_serial")
 pico_set_program_version(projeto_serial "0.1")

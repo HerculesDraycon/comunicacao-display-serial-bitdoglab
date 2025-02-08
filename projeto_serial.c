@@ -22,7 +22,6 @@
 #define RED_PINO 13           // Pino do LED vermelho do RGB
 #define UART_TX_PINO 0         // Pino GPIO usado para TX
 #define UART_RX_PINO 1         // Pino GPIO usado para RX
-#define BAUD_RATE 115200      // Define a taxa de transmissao serial
 #define NUMERO_DE_LEDS 25     // Numero de LED's na matriz
 #define DEBOUNCE_LINE 300000  // 300ms em microsegundos
 
@@ -30,6 +29,23 @@ bool cor = true;
 ssd1306_t ssd;                      // Inicializa a estrutura do display
 volatile int btn_a_acionado = 0;    // Variavel de controle do 'botao a' pressioando
 volatile int btn_b_acionado = 0;    // Variavel de controle do 'botao b' pressioando
+
+// Funcao responsavel por estruturar o funcionamento da matriz de leds usada no projeto
+uint32_t matrix_rgb(double r, double g, double b) {
+    unsigned char R, G, B;
+    R = r * 255;
+    G = g * 255;
+    B = b * 255;
+    return (G << 24) | (R << 16) | (B << 8);
+}
+
+// Funcao responsavel por exibir em LED's o desenho matricial passado como parametro
+void desenho_pio(double *desenho, uint32_t valor_led, PIO pio, uint sm, double r, double g, double b) {
+    for (int16_t i = 0; i < NUMERO_DE_LEDS; i++) {
+            valor_led = matrix_rgb(desenho[24 - i], 0.0, 0.0);
+            pio_sm_put_blocking(pio, sm, valor_led);
+    }
+}
 
 // Funcao com rotina de interrupcao (IRQ) que detecta e controla os botoes pressionados
 void button_callback(uint gpio, uint32_t events){
@@ -104,8 +120,6 @@ int main(){
     ssd1306_send_data(&ssd);
     // Inicializa a biblioteca padrao
     stdio_init_all();
-    // Inicializa a UART
-    uart_init(UART_ID, BAUD_RATE);
     // Iniciacao dos pinos do LED RGB
     gpio_init(RED_PINO);
     gpio_init(GREEN_PINO);
@@ -117,9 +131,6 @@ int main(){
 
     gpio_set_function(UART_TX_PINO, GPIO_FUNC_UART);  // Configura o pino 0 para TX
     gpio_set_function(UART_RX_PINO, GPIO_FUNC_UART);  // Configura o pino 1 para RX
-
-    // Chamada do desenho inicial no comeco da execucao
-    //desenho_pio(frame_0, valor_led, pio, sm, r, g, b);
     // Iniciacao dos botoes 'a' e 'b'
     gpio_init(BTN_A);
     gpio_init(BTN_B);
@@ -147,13 +158,37 @@ int main(){
         ssd1306_draw_string(&ssd, "H S Oliveira", 15, 48);  // Desenha uma string      
         ssd1306_send_data(&ssd);  // Atualiza o display
 
-        if (uart_is_readable(UART_ID)) {
-            // Lê um caractere da UART
-            char c = uart_getc(UART_ID);
+        if (stdio_usb_connected()){
+            // Le um caractere da UART
+            char c;
             
-            ssd1306_fill(&ssd, cor);
-            ssd1306_draw_char(&ssd, c, 20, 30);
-            ssd1306_send_data(&ssd);
+            if(scanf("%c", &c) == 1){
+
+                ssd1306_fill(&ssd, cor);
+                ssd1306_draw_char(&ssd, c, 20, 30);
+                ssd1306_send_data(&ssd);
+
+                if(c >= '0' && c <= '9'){
+
+                    int numero = c - '0';
+
+                    switch(numero){
+                        case 0:desenho_pio(frame_0, valor_led, pio, sm, r, g, b);break;
+                        case 1:desenho_pio(frame_1, valor_led, pio, sm, r, g, b);break;
+                        case 2:desenho_pio(frame_2, valor_led, pio, sm, r, g, b);break;
+                        case 3:desenho_pio(frame_3, valor_led, pio, sm, r, g, b);break;
+                        case 4:desenho_pio(frame_4, valor_led, pio, sm, r, g, b);break;
+                        case 5:desenho_pio(frame_5, valor_led, pio, sm, r, g, b);break;
+                        case 6:desenho_pio(frame_6, valor_led, pio, sm, r, g, b);break;
+                        case 7:desenho_pio(frame_7, valor_led, pio, sm, r, g, b);break;
+                        case 8:desenho_pio(frame_8, valor_led, pio, sm, r, g, b);break;
+                        case 9:desenho_pio(frame_9, valor_led, pio, sm, r, g, b);break;
+                        default:desenho_pio(frame_0, valor_led, pio, sm, r, g, b);break;
+                    }
+
+                }
+
+            }
 
         }
 
