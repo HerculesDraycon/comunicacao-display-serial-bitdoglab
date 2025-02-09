@@ -62,14 +62,14 @@ void button_callback(uint gpio, uint32_t events){
             ssd1306_fill(&ssd, !cor);  // Limpa o display
             ssd1306_draw_string(&ssd, "Verde Desativado", 20, 30);
             ssd1306_send_data(&ssd);  // Atualiza o display
-            printf("Verde Desativado!");
+            printf("\nVerde Desativado!");
         } else {
             gpio_put(GREEN_PINO, true);
             cor = !cor;
             ssd1306_fill(&ssd, !cor);  // Limpa o display
             ssd1306_draw_string(&ssd, "Verde Ativado", 20, 30);
             ssd1306_send_data(&ssd);  // Atualiza o display
-            printf("Verde Ativado!");
+            printf("\nVerde Ativado!");
         }
 
     } else if(gpio == BTN_B && (marco -  btn_b_acionado) > DEBOUNCE_LINE){
@@ -82,14 +82,14 @@ void button_callback(uint gpio, uint32_t events){
             ssd1306_fill(&ssd, !cor);  // Limpa o display
             ssd1306_draw_string(&ssd, "Azul Desativado", 20, 30);
             ssd1306_send_data(&ssd);  // Atualiza o display
-            printf("Azul Desativado!");
+            printf("\nAzul Desativado!");
         } else {
             gpio_put(BLUE_PINO, true);
             cor = !cor;
             ssd1306_fill(&ssd, !cor);  // Limpa o display
             ssd1306_draw_string(&ssd, "Azul Ativado", 20, 30);
             ssd1306_send_data(&ssd);  // Atualiza o display
-            printf("Azul Ativado!");
+            printf("\nAzul Ativado!");
         }
 
     }

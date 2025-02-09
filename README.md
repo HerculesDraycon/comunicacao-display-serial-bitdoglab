@@ -1,6 +1,6 @@
 # Tarefa - Comunicação UART e SSD1306 - Raspberry Pi Pico W
 
-**LINK DO VÍDEO ENSAIO:** 
+**LINK DO VÍDEO ENSAIO:** https://drive.google.com/file/d/13kh4JvQzIjS5OKSMk17vPepPyefy2PkI/view?usp=sharing
 
 # Documentação do Código
 
