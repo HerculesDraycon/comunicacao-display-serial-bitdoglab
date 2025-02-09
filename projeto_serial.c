@@ -25,7 +25,7 @@
 #define NUMERO_DE_LEDS 25     // Numero de LED's na matriz
 #define DEBOUNCE_LINE 300000  // 300ms em microsegundos
 
-bool cor = true;
+bool cor = false;
 ssd1306_t ssd;                      // Inicializa a estrutura do display
 volatile int btn_a_acionado = 0;    // Variavel de controle do 'botao a' pressioando
 volatile int btn_b_acionado = 0;    // Variavel de controle do 'botao b' pressioando
@@ -62,14 +62,14 @@ void button_callback(uint gpio, uint32_t events){
             ssd1306_fill(&ssd, !cor);  // Limpa o display
             ssd1306_draw_string(&ssd, "Verde Desativado", 20, 30);
             ssd1306_send_data(&ssd);  // Atualiza o display
-            uart_puts(UART_ID, "\nVerde Desativado!");
+            printf("Verde Desativado!");
         } else {
             gpio_put(GREEN_PINO, true);
             cor = !cor;
             ssd1306_fill(&ssd, !cor);  // Limpa o display
             ssd1306_draw_string(&ssd, "Verde Ativado", 20, 30);
             ssd1306_send_data(&ssd);  // Atualiza o display
-            uart_puts(UART_ID, "\nVerde Ativado!");
+            printf("Verde Ativado!");
         }
 
     } else if(gpio == BTN_B && (marco -  btn_b_acionado) > DEBOUNCE_LINE){
@@ -82,14 +82,14 @@ void button_callback(uint gpio, uint32_t events){
             ssd1306_fill(&ssd, !cor);  // Limpa o display
             ssd1306_draw_string(&ssd, "Azul Desativado", 20, 30);
             ssd1306_send_data(&ssd);  // Atualiza o display
-            uart_puts(UART_ID, "\nAzul Desativado!");
+            printf("Azul Desativado!");
         } else {
             gpio_put(BLUE_PINO, true);
             cor = !cor;
             ssd1306_fill(&ssd, !cor);  // Limpa o display
             ssd1306_draw_string(&ssd, "Azul Ativado", 20, 30);
             ssd1306_send_data(&ssd);  // Atualiza o display
-            uart_puts(UART_ID, "\nAzul Ativado!");
+            printf("Azul Ativado!");
         }
 
     }
@@ -148,11 +148,9 @@ int main(){
     uart_puts(UART_ID, init_message);
 
     while (true) {
-        
-        cor = !cor;
         // Atualiza o conteudo do display
-        ssd1306_fill(&ssd, !cor);  // Limpa o display
-        ssd1306_rect(&ssd, 3, 3, 122, 58, cor, !cor);  // Desenha um retângulo
+        ssd1306_fill(&ssd, cor);  // Limpa o display
+        ssd1306_rect(&ssd, 3, 3, 122, 58, !cor, cor);  // Desenha um retangulo
         ssd1306_draw_string(&ssd, "Fev de 2025", 8, 10);  // Desenha uma string
         ssd1306_draw_string(&ssd, "TESTANDO", 20, 30);  // Desenha uma string
         ssd1306_draw_string(&ssd, "H S Oliveira", 15, 48);  // Desenha uma string      
